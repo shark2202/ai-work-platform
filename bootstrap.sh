@@ -32,11 +32,11 @@ check_component() {
   if [ ! -d "$path/.git" ]; then
     printf "  ✗ %-14s 缺目录或不是 git 仓库：%s\n" "$key" "$path"; return 1
   fi
-  local have; have=$(git -C "$path" rev-parse --short=8 HEAD)
+  local have; have=$(git -C "$path" rev-parse HEAD)
   if [ -n "$want" ] && [ "${have:0:${#want}}" != "$want" ]; then
-    printf "  ! %-14s 版本不符：本地 %s，lock 写 %s\n" "$key" "$have" "$want"; return 2
+    printf "  ! %-14s 版本不符：本地 %s，lock 写 %s\n" "$key" "${have:0:10}" "${want:0:10}"; return 2
   fi
-  printf "  ✓ %-14s %s @ %s\n" "$key" "$path" "$have"; return 0
+  printf "  ✓ %-14s %s @ %s\n" "$key" "$path" "${have:0:10}"; return 0
 }
 
 rc=0
@@ -46,10 +46,19 @@ done < <($EPY - <<PY
 import json
 d = json.load(open("$LOCK"))
 for c in d["components"]:
-    print("\t".join([c["key"], c["local_path"], c.get("commit","")]))
+    if c["key"] == "pi-agent":
+        # skill 是从 shortdrama 仓库软链过去的：校验源仓库 + skill 文件
+        print("\t".join([c["key"], "/home/a/ai-work/workspace/shortdrama", ""]))
+    else:
+        print("\t".join([c["key"], c["local_path"], c.get("commit","")]))
 PY
 )
-echo
+
+if [ -f "$HOME/.pi/agent/skills/shortdrama-production/SKILL.md" ]; then
+  printf "  ✓ %-14s %s\n" "skill 链接" "$HOME/.pi/agent/skills/shortdrama-production"
+else
+  printf "  ! %-14s 未安装（bash components/pi-agent/install.sh）\n" "skill 链接"
+fi
 
 if [ $ONLY_CHECK -eq 1 ]; then
   echo "── 健康检查"

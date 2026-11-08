@@ -11,13 +11,14 @@
       "subpath": "skills/shortdrama-production",
       "local_path": "/home/a/ai-work/.pi/agent/skills/shortdrama-production",
       "install": "bash components/pi-agent/install.sh",
-      "verify": "ls ~/.pi/agent/skills/shortdrama-production/SKILL.md"
+      "verify": "ls ~/.pi/agent/skills/shortdrama-production/SKILL.md",
+      "commit": "15e3d683e986b176366a20327adbef61e9a25232"
     },
     {
       "key": "comfyui",
       "role": "渲染执行体：定妆图(Z-Image) + 视频镜(MiniMax-H3 W4A8) + 加速节点",
       "repo": "https://github.com/comfyanonymous/ComfyUI.git",
-      "commit": "72865f4f",
+      "commit": "72865f4f27eaf5396f8f36370e0a2be3a9a090ee",
       "tag": "v0.33.1",
       "local_path": "/home/a/ai-work/ComfyUI",
       "local_patch": "components/comfyui/patches/comfyui-v0.33.1-local.patch",
@@ -30,7 +31,7 @@
       "key": "web-platform",
       "role": "自定义 web 平台：任务看板 / 审片台 / 放映页 / 交付审批 / 上传包",
       "repo": "https://github.com/shark2202/shortdrama.git",
-      "commit": "15e3d683e986b176366a20327adbef11e9a25232",
+      "commit": "15e3d683e986b176366a20327adbef61e9a25232",
       "local_path": "/home/a/ai-work/workspace/shortdrama",
       "service": "shortdrama-studio.service (systemd --user)",
       "install": "bash tools/serve_review.sh install",
@@ -44,7 +45,8 @@
       "role": "H3 工作流/客户端库/多镜脚本/放大脚本（h3turing 包）",
       "repo": "https://github.com/shark2202/minimax-h3-turing.git",
       "local_path": "/home/a/ai-work/minimax-h3-turing",
-      "branch": "dev"
+      "branch": "dev",
+      "commit": "b741e46b00130b8c9f2be3d85f0f0116a236dcf5"
     },
     {
       "key": "local-llm",
@@ -52,14 +54,16 @@
       "repo": "https://github.com/shark2202/qwen3.8-2080ti-256k.git",
       "local_path": "/home/a/ai-work/workspace/qwen3.8-2080ti-256k",
       "branch": "dev",
-      "endpoint": "http://127.0.0.1:8080/v1"
+      "endpoint": "http://127.0.0.1:8080/v1",
+      "commit": "0c26e4dbbe24b57f57ee5aaf640f2673b32dcc11"
     },
     {
       "key": "series-assets",
       "role": "剧集产物与结论（story/shots/审片/审批/交付清单）",
       "repo": "https://github.com/shark2202/duanju.git",
       "local_path": "/home/a/ai-work/duanju",
-      "branch": "main"
+      "branch": "main",
+      "commit": "2804336535f0ab6f27f96eaa870091a22c6b39b2"
     }
   ],
   "gpu_discipline": {
