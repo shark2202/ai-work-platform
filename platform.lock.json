@@ -12,7 +12,7 @@
       "local_path": "/home/a/ai-work/.pi/agent/skills/shortdrama-production",
       "install": "bash components/pi-agent/install.sh",
       "verify": "ls ~/.pi/agent/skills/shortdrama-production/SKILL.md",
-      "commit": "15e3d683e986b176366a20327adbef61e9a25232"
+      "commit": "611fb949e6e2be430b9e8e33e927fcdff5d1edc9"
     },
     {
       "key": "comfyui",
@@ -31,7 +31,7 @@
       "key": "web-platform",
       "role": "自定义 web 平台：任务看板 / 审片台 / 放映页 / 交付审批 / 上传包",
       "repo": "https://github.com/shark2202/shortdrama.git",
-      "commit": "15e3d683e986b176366a20327adbef61e9a25232",
+      "commit": "611fb949e6e2be430b9e8e33e927fcdff5d1edc9",
       "local_path": "/home/a/ai-work/workspace/shortdrama",
       "service": "shortdrama-studio.service (systemd --user)",
       "install": "bash tools/serve_review.sh install",
