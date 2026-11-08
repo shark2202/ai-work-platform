@@ -69,5 +69,68 @@
   "gpu_discipline": {
     "rule": "单卡 22GB：本地 LLM(13-19GB) 与 H3 渲染/超分(≈20GB) 不能共存",
     "gate": "渲染前显存 < 4000 MiB（superres.py 自带 wait_gpu）"
+  },
+  "runtime_layer": {
+    "note": "运行环境/外壳层：不是产品组件，是 agent 在哪跑、怎么远程看终端。与产品层分开管。",
+    "services": [
+      {
+        "key": "herdr",
+        "role": "终端工作区/面板管理器（headless 守护进程）",
+        "binary": "/home/a/.local/bin/herdr server",
+        "unit": "herdr.service",
+        "listen": "unix socket (~/.config/herdr/herdr.sock)",
+        "auth": "本地 socket"
+      },
+      {
+        "key": "herdr-web",
+        "role": "herdr 的浏览器 UI 桥（看面板/开终端）",
+        "binary": "/opt/herdr-web/bin/herdr-web-bridge",
+        "unit": "herdr-web.service",
+        "listen": "0.0.0.0:8787",
+        "auth": "无鉴权（同网段任何人都能开终端）",
+        "risk": "等于开放 shell；生产建议绑 tailscale(100.69.133.37) 或加反代鉴权"
+      },
+      {
+        "key": "code-server",
+        "role": "通用 IDE 入口",
+        "listen": "0.0.0.0:8888",
+        "auth": "按 code-server 自身配置",
+        "note": "与短剧平台无关，但同网段可达"
+      },
+      {
+        "key": "mochi-plugin",
+        "role": "把 agent 状态推到 iPhone（herdr 插件）",
+        "path": "~/.mochi/herdr-plugin"
+      }
+    ]
+  },
+  "exposure_audit": {
+    "note": "0.0.0.0 且无鉴权的服务（按风险排序）",
+    "items": [
+      {
+        "port": 8787,
+        "svc": "herdr-web",
+        "risk": "可开终端 = 拿到 shell",
+        "action": "绑 tailscale 或加反代"
+      },
+      {
+        "port": 8188,
+        "svc": "ComfyUI",
+        "risk": "可提交渲染任务、读 output（含别人的片）",
+        "action": "绑 127.0.0.1（C7）"
+      },
+      {
+        "port": 8080,
+        "svc": "本地 27B LLM",
+        "risk": "可任意调用模型（算力盗用）",
+        "action": "按需启停 + 绑回环"
+      },
+      {
+        "port": 8095,
+        "svc": "审片台（产品）",
+        "risk": "读开放（自己看自己的片）/ 写要令牌",
+        "action": "保持现状"
+      }
+    ]
   }
 }
