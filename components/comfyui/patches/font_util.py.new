@@ -1,0 +1,44 @@
+"""Font helpers for drawing text with PIL.
+
+PIL's bundled default font has no CJK glyphs, so Chinese renders as tofu boxes
+(□□□).  Prefer a system CJK font whenever the text actually contains Chinese.
+"""
+
+from PIL import ImageFont
+
+# (path, face index) — index 2 of the Noto CJK collections is the SC face.
+_CJK_FONTS = (
+    ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 2),
+    ("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc", 2),
+    ("/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc", 2),
+)
+
+
+def has_cjk(text: str) -> bool:
+    """True if the text contains Chinese ideographs or fullwidth punctuation."""
+    return any(
+        "\u2e80" <= ch <= "\u9fff" or "\uac00" <= ch <= "\ud7af" or "\uff00" <= ch <= "\uffef"
+        for ch in text
+    )
+
+
+def cjk_font(size: int):
+    """A font that can draw Chinese, or None if the system has no CJK font."""
+    for path, index in _CJK_FONTS:
+        try:
+            return ImageFont.truetype(path, size, index=index)
+        except Exception:
+            continue
+    return None
+
+
+def get_font(size: int, text: str = ""):
+    """Font for `size`; CJK-capable when `text` contains Chinese."""
+    if text and has_cjk(text):
+        font = cjk_font(size)
+        if font is not None:
+            return font
+    try:
+        return ImageFont.load_default(size=size)
+    except TypeError:  # Pillow < 10.1 has no size argument
+        return ImageFont.load_default()

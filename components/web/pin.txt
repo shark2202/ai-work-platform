@@ -1,0 +1,5 @@
+component: web-platform
+repo: https://github.com/shark2202/shortdrama.git
+local_path: /home/a/ai-work/workspace/shortdrama
+commit: 15e3d683e986b176366a20327adbef61e9a25232
+branch: main

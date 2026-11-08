@@ -1,0 +1,5 @@
+# 凭据绝不进版本库
+*.token
+token
+hosts.yml
+auth.json

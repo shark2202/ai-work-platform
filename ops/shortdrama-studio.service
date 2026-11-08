@@ -1,0 +1,17 @@
+# 审片台的 systemd user unit 模板（实际 unit 由 shortdrama 仓库的 tools/serve_review.sh 生成，
+# 令牌从 ~/.config/shortdrama/studio.token 读，不写进版本库）。
+[Unit]
+Description=短剧审片台（任务看板 / 审片 / 放映 / 交付审批）
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/a/ai-work/workspace/shortdrama
+Environment=STUDIO_TOKEN=替换为令牌
+ExecStart=/home/a/ai-work/.venv/bin/python /home/a/ai-work/workspace/shortdrama/sd studio /home/a/ai-work/duanju --series auto --host 0.0.0.0 --port 8095 --token ${STUDIO_TOKEN}
+Restart=always
+RestartSec=5
+Nice=5
+
+[Install]
+WantedBy=default.target

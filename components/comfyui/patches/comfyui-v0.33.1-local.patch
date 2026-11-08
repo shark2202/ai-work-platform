@@ -1,0 +1,92 @@
+diff --git a/comfy_extras/nodes_bounding_boxes.py b/comfy_extras/nodes_bounding_boxes.py
+index de3709b9..96f57595 100644
+--- a/comfy_extras/nodes_bounding_boxes.py
++++ b/comfy_extras/nodes_bounding_boxes.py
+@@ -7,6 +7,7 @@ from typing_extensions import override
+ 
+ from comfy_api.latest import ComfyExtension, io
+ from comfy_extras.color_util import hex_to_rgb, normalize_palette, readable_color
++from comfy_extras.font_util import cjk_font
+ 
+ _PREVIEW_LONG_EDGE = 1024
+ _PREVIEW_DIM = 0.25
+@@ -48,6 +49,9 @@ def fractions_to_bbox_frame(boxes: list, width: int, height: int) -> list:
+ 
+ 
+ def _font(size: int):
++    font = cjk_font(size)
++    if font is not None:
++        return font
+     try:
+         return ImageFont.load_default(size)
+     except Exception:
+diff --git a/comfy_extras/nodes_rtdetr.py b/comfy_extras/nodes_rtdetr.py
+index 653f3af2..e33d1d08 100644
+--- a/comfy_extras/nodes_rtdetr.py
++++ b/comfy_extras/nodes_rtdetr.py
+@@ -5,6 +5,7 @@ from comfy.ldm.rt_detr.rtdetr_v4 import COCO_CLASSES
+ import comfy.model_management
+ import comfy.utils
+ from comfy_api.latest import ComfyExtension, io
++from comfy_extras.font_util import cjk_font
+ from torchvision.transforms import ToPILImage, ToTensor
+ from PIL import ImageDraw, ImageFont
+ 
+@@ -127,10 +128,7 @@ class DrawBBoxes(io.ComfyNode):
+     @classmethod
+     def draw_detections(cls, img, boxes, labels, scores):
+         draw = ImageDraw.Draw(img)
+-        try:
+-            font = ImageFont.truetype('arial.ttf', 16)
+-        except Exception:
+-            font = ImageFont.load_default()
++        font = cjk_font(16) or ImageFont.load_default()
+         colors = [(255,0,0),(0,200,0),(0,0,255),(255,165,0),(128,0,128),
+                 (0,255,255),(255,20,147),(100,149,237)]
+         for box, label, score in sorted(zip(boxes, labels, scores), key=lambda x: x[2].item()):
+diff --git a/comfy_extras/nodes_text_overlay.py b/comfy_extras/nodes_text_overlay.py
+index 4c5cdae6..ba357bfc 100644
+--- a/comfy_extras/nodes_text_overlay.py
++++ b/comfy_extras/nodes_text_overlay.py
+@@ -4,6 +4,7 @@ from PIL import Image as PILImage, ImageColor, ImageDraw, ImageFont
+ from typing_extensions import override
+ 
+ from comfy_api.latest import ComfyExtension, IO
++from comfy_extras.font_util import get_font
+ 
+ 
+ class TextOverlay(IO.ComfyNode):
+@@ -77,7 +78,7 @@ class TextOverlay(IO.ComfyNode):
+         floor = min(size, max(min_font_pixels, int(round(min_font_percent / 100.0 * height))))
+ 
+         while True:
+-            font = ImageFont.load_default(size=size)
++            font = get_font(size, text)
+             stroke = max(1, int(round(size * outline_thickness_factor))) if outline_rgba[3] > 0 else 0
+             block = "\n".join(cls.wrap_text(text, font, max_width))
+             # convert line spacing to pixel spacing
+diff --git a/comfy_extras/nodes_train.py b/comfy_extras/nodes_train.py
+index 0dde97fc..43ab60c7 100644
+--- a/comfy_extras/nodes_train.py
++++ b/comfy_extras/nodes_train.py
+@@ -23,6 +23,7 @@ import node_helpers
+ from comfy.weight_adapter import adapters, adapter_maps
+ from comfy.weight_adapter.bypass import BypassInjectionManager
+ from comfy_api.latest import ComfyExtension, io, ui
++from comfy_extras.font_util import cjk_font
+ from comfy.utils import ProgressBar
+ 
+ 
+@@ -1457,11 +1458,7 @@ class LossGraphNode(io.ComfyNode):
+             [(margin, height), (width + margin, height)], fill="black", width=2
+         )  # X-axis
+ 
+-        font = None
+-        try:
+-            font = ImageFont.truetype("arial.ttf", 12)
+-        except IOError:
+-            font = ImageFont.load_default()
++        font = cjk_font(12) or ImageFont.load_default()
+ 
+         # Add axis labels
+         draw.text((5, height // 2), "Loss", font=font, fill="black")
